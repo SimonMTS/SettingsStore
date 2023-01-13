@@ -1,0 +1,88 @@
+openapi: 3.0.0
+
+info:
+  title: Settings Store
+  version: 1.0.0
+
+paths:
+  /settings:
+    get:
+      summary: Get all settings
+      operationId: getAllSettings
+      responses:
+        200:
+          description: Settings retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Setting"
+    post:
+      summary: Add new setting
+      operationId: addSettings
+      requestBody:
+        description: Setting to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Setting'
+      responses:
+        201:
+          description: Settings added successfully
+  /settings/{id}:
+    get:
+      summary: Get a setting
+      operationId: getSetting
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the setting to get
+      responses:
+        200:
+          description: Setting retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Setting"
+    put:
+      summary: Update existing setting
+      operationId: updateSettings
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the setting to get
+      requestBody:
+        description: Setting to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Setting'
+      responses:
+        201:
+          description: Settings added successfully
+
+components:
+  schemas:
+    Setting:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+        rank:
+          type: integer
+          minimum: 0
+          maximum: 50
+      required:
+        - name
+        - rank
