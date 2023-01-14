@@ -5,8 +5,6 @@ import (
 	"settingsstore/gen/models"
 	"settingsstore/gen/restapi/operations"
 
-	httperr "github.com/go-openapi/errors"
-
 	"gorm.io/gorm"
 )
 
@@ -16,13 +14,14 @@ func (h handler) Auth(s string) (*models.Principal, error) {
 		return &prin, nil
 	}
 
-	return nil, httperr.New(401, "incorrect api key auth")
+	return nil, errors.New("Ah ah ah! You didn't say the magic word!")
 }
 
 func (h handler) AddSetting(
 	params operations.AddSettingParams,
 	principal *models.Principal,
 ) operations.AddSettingResponder {
+
 	err := h.db().Create(ToEntity(params.Setting)).Error
 	if err != nil {
 		return operations.NewAddSettingInternalServerError()
