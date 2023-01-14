@@ -14,62 +14,28 @@ type handler struct {
 }
 
 func (h handler) AddSettings(params operations.AddSettingParams) operations.AddSettingResponder {
-	h.db.Create(&SettingEntity{
-		ID:    *params.Setting.ID,
-		Type:  *params.Setting.Type,
-		Value: *params.Setting.Value,
-		End:   params.Setting.End.UTC(),
-	})
-
+	h.db.Create(ToEntity(params.Setting))
 	return operations.NewAddSettingCreated()
 }
 
 func (h handler) GetAllSettings(params operations.GetAllSettingsParams) operations.GetAllSettingsResponder {
 	settingEntities := []SettingEntity{}
 	h.db.Find(&settingEntities)
-
-	settings := []*models.Setting{}
-	for _, s := range settingEntities {
-		copy := s
-		settings = append(settings, &models.Setting{
-			ID:    &copy.ID,
-			Type:  &copy.Type,
-			Value: &copy.Value,
-			End:   &models.DateTime{Time: copy.End},
-		})
-	}
-
-	return operations.NewGetAllSettingsOK().WithPayload(settings)
+	return operations.NewGetAllSettingsOK().WithPayload(ToDtos(&settingEntities))
 }
 
 func (h handler) GetSetting(params operations.GetSettingParams) operations.GetSettingResponder {
 	settingEntity := SettingEntity{ID: params.ID}
 	h.db.First(&settingEntity)
-	setting := &models.Setting{
-		ID:    &settingEntity.ID,
-		Type:  &settingEntity.Type,
-		Value: &settingEntity.Value,
-		End:   &models.DateTime{Time: settingEntity.End},
-	}
-
-	return operations.NewGetSettingOK().WithPayload(setting)
+	return operations.NewGetSettingOK().WithPayload(ToDto(&settingEntity))
 }
 
 func (h handler) UpdateSettings(params operations.UpdateSettingParams) operations.UpdateSettingResponder {
-	settingEntity := SettingEntity{ID: params.ID}
-	h.db.First(&settingEntity)
-	settingEntity.ID = *params.Setting.ID
-	settingEntity.Type = *params.Setting.Type
-	settingEntity.Value = *params.Setting.Value
-	settingEntity.End = params.Setting.End.UTC()
-	h.db.Save(&settingEntity)
-
+	h.db.Save(ToEntity(params.Setting))
 	return operations.NewUpdateSettingNoContent()
 }
 
 func (h handler) RemoveSettings(params operations.RemoveSettingParams) operations.RemoveSettingResponder {
-	settingEntity := SettingEntity{ID: params.ID}
-	h.db.Delete(&settingEntity)
-
+	h.db.Delete(&SettingEntity{}, params.ID)
 	return operations.NewRemoveSettingNoContent()
 }
