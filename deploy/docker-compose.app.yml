@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  app:
+    image: settingstore
+    build: ..
+    environment:
+      - SETTING_STORE_DB=host=db user=postgres password=postgres dbname=postgres port=5432
+    ports:
+      - '8080:8080'

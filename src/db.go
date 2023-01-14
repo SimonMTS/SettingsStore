@@ -2,6 +2,7 @@ package src
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"gorm.io/driver/postgres"
@@ -22,7 +23,11 @@ func DatabaseSetup() (*gorm.DB, error) {
 		"user=postgres " +
 		"password=postgres " +
 		"dbname=postgres " +
-		"port=5432 "
+		"port=5432"
+
+	if override := os.Getenv("SETTING_STORE_DB"); override != "" {
+		dsn = override
+	}
 
 	var (
 		db  *gorm.DB

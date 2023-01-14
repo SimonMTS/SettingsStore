@@ -14,3 +14,9 @@ context:
 
 cloc:
 	cloc --exclude-dir=gen .
+
+test:
+	(cd systest && godog run .)
+
+docker-image:
+	docker build -t settingstore -f deploy/dockerfile .

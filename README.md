@@ -8,3 +8,6 @@ Just run `make all` and be amaze :)
 
 todo:
  * cucumber testing
+   * https://github.com/cucumber/godog
+   * https://github.com/cucumber/godog/discussions/478
+   * https://golang.testcontainers.org/features/docker_compose/
