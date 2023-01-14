@@ -1,11 +1,10 @@
 # Settings Store
 
-Just run `go generate` & `go run .` and be amaze :)
+Just run `make all` and be amaze :)
 
-(But first install [`go-swagger`](https://goswagger.io/install.html))
+(But first install [`go-swagger`](https://goswagger.io/install.html) (`yay -S go-swagger`))
 
 ---
 
 todo:
- * db stuff
- * mapping between structs
+ * cucumber testing

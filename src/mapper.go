@@ -4,8 +4,8 @@ import (
 	"settingsstore/gen/models"
 )
 
-func ToEntity(source *models.Setting) (target *SettingEntity) {
-	target = &SettingEntity{}
+func ToEntity(source *models.Setting) (target *Setting) {
+	target = &Setting{}
 	target.ID = *source.ID
 	target.Type = *source.Type
 	target.Value = *source.Value
@@ -13,7 +13,7 @@ func ToEntity(source *models.Setting) (target *SettingEntity) {
 	return
 }
 
-func ToDto(source *SettingEntity) (target *models.Setting) {
+func ToDto(source *Setting) (target *models.Setting) {
 	target = &models.Setting{}
 	target.ID = &source.ID
 	target.Type = &source.Type
@@ -22,7 +22,7 @@ func ToDto(source *SettingEntity) (target *models.Setting) {
 	return
 }
 
-func ToDtos(sources *[]SettingEntity) (targets []*models.Setting) {
+func ToDtos(sources *[]Setting) (targets []*models.Setting) {
 	for _, s := range *sources {
 		targets = append(targets, ToDto(&s))
 	}

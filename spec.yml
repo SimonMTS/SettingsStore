@@ -9,6 +9,8 @@ paths:
     get:
       summary: Get all settings
       operationId: getAllSettings
+      security:
+        - key: []
       responses:
         '200':
           description: Settings retrieved successfully
@@ -16,6 +18,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Setting'
+        '500':
+          $ref: '#/responses/InternalServerError' 
       produces:
         - application/json
     post:
@@ -24,6 +28,8 @@ paths:
       responses:
         '201':
           description: Settings added successfully
+        '500':
+          $ref: '#/responses/InternalServerError' 
       parameters:
         - description: Setting to add
           required: true
@@ -31,6 +37,8 @@ paths:
           in: body
           schema:
             $ref: '#/definitions/Setting'
+      security:
+        - key: []
       consumes:
         - application/json
 
@@ -44,13 +52,17 @@ paths:
           required: true
           description: ID of the setting to get
           type: integer
+      security:
+        - key: []
       responses:
         '200':
           description: Setting retrieved successfully
           schema:
             $ref: '#/definitions/Setting'
         '404':
-          description: Setting does not exist
+          $ref: '#/responses/SettingNotFound' 
+        '500':
+          $ref: '#/responses/InternalServerError' 
       produces:
         - application/json
     put:
@@ -68,11 +80,15 @@ paths:
           in: body
           schema:
             $ref: '#/definitions/Setting'
+      security:
+        - key: []
       responses:
         '204':
           description: Setting updated successfully
         '404':
-          description: Setting does not exist
+          $ref: '#/responses/SettingNotFound' 
+        '500':
+          $ref: '#/responses/InternalServerError' 
       consumes:
         - application/json
     delete:
@@ -84,13 +100,29 @@ paths:
           required: true
           description: ID of the setting to remove
           type: integer
+      security:
+        - key: []
       responses:
         '204':
           description: Setting removed successfully
         '404':
-          description: Setting does not exist
+          $ref: '#/responses/SettingNotFound' 
+        '500':
+          $ref: '#/responses/InternalServerError' 
       consumes:
         - application/json
+
+responses:
+  SettingNotFound:
+    description: The specified setting was not found
+  InternalServerError:
+    description: Something went wrong while processing your request
+
+securityDefinitions:
+  key:
+    type: apiKey
+    in: header
+    name: x-token
 
 definitions:
   Setting:
@@ -122,3 +154,6 @@ definitions:
       import:
         package: time
       embedded: true
+
+  principal:
+    type: string

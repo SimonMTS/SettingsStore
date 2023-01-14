@@ -5,9 +5,18 @@ import (
 	"settingsstore/gen/restapi"
 	"settingsstore/gen/restapi/operations"
 
+	"github.com/MadAppGang/httplog"
 	"github.com/go-openapi/loads"
 	"gorm.io/gorm"
 )
+
+type handler struct {
+	database *gorm.DB
+}
+
+func (h handler) db() *gorm.DB {
+	return h.database.Debug()
+}
 
 func ApiSetup(db *gorm.DB) (*restapi.Server, error) {
 	fmt.Println("server setup...")
@@ -17,59 +26,20 @@ func ApiSetup(db *gorm.DB) (*restapi.Server, error) {
 		return nil, err
 	}
 
-	handlers := handler{db: db}
 	api := operations.NewSettingsStoreAPI(swaggerSpec)
-	api.AddSettingHandler = operations.AddSettingHandlerFunc(handlers.AddSettings)
-	api.GetAllSettingsHandler = operations.GetAllSettingsHandlerFunc(handlers.GetAllSettings)
-	api.GetSettingHandler = operations.GetSettingHandlerFunc(handlers.GetSetting)
-	api.UpdateSettingHandler = operations.UpdateSettingHandlerFunc(handlers.UpdateSettings)
-	api.RemoveSettingHandler = operations.RemoveSettingHandlerFunc(handlers.RemoveSettings)
+	api.UseSwaggerUI()
+
+	handler := handler{database: db}
+	api.AddSettingHandler = operations.AddSettingHandlerFunc(handler.AddSetting)
+	api.GetAllSettingsHandler = operations.GetAllSettingsHandlerFunc(handler.GetAllSettings)
+	api.GetSettingHandler = operations.GetSettingHandlerFunc(handler.GetSetting)
+	api.UpdateSettingHandler = operations.UpdateSettingHandlerFunc(handler.UpdateSetting)
+	api.RemoveSettingHandler = operations.RemoveSettingHandlerFunc(handler.RemoveSetting)
+	api.KeyAuth = handler.Auth
 
 	server := restapi.NewServer(api)
+	server.SetHandler((api.Serve(httplog.Logger)))
 	server.Port = 8080
-	server.ConfigureAPI()
+
 	return server, nil
-}
-
-type handler struct {
-	db *gorm.DB
-}
-
-func (h handler) AddSettings(
-	params operations.AddSettingParams,
-) operations.AddSettingResponder {
-	h.db.Create(ToEntity(params.Setting))
-	return operations.NewAddSettingCreated()
-}
-
-func (h handler) GetAllSettings(
-	params operations.GetAllSettingsParams,
-) operations.GetAllSettingsResponder {
-	settingEntities := []SettingEntity{}
-	h.db.Find(&settingEntities)
-	return operations.NewGetAllSettingsOK().
-		WithPayload(ToDtos(&settingEntities))
-}
-
-func (h handler) GetSetting(
-	params operations.GetSettingParams,
-) operations.GetSettingResponder {
-	settingEntity := SettingEntity{ID: params.ID}
-	h.db.First(&settingEntity)
-	return operations.NewGetSettingOK().
-		WithPayload(ToDto(&settingEntity))
-}
-
-func (h handler) UpdateSettings(
-	params operations.UpdateSettingParams,
-) operations.UpdateSettingResponder {
-	h.db.Save(ToEntity(params.Setting))
-	return operations.NewUpdateSettingNoContent()
-}
-
-func (h handler) RemoveSettings(
-	params operations.RemoveSettingParams,
-) operations.RemoveSettingResponder {
-	h.db.Delete(&SettingEntity{}, params.ID)
-	return operations.NewRemoveSettingNoContent()
 }

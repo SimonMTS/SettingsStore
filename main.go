@@ -1,14 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"settingsstore/src"
 )
-
-//go:generate rm -rf ../gen
-//go:generate mkdir -p ../gen
-//go:generate swagger generate server -t ../gen -f ../spec.yml --exclude-main --strict-responders
-//go:generate go mod tidy
 
 func main() {
 	db, err := src.DatabaseSetup()
@@ -21,6 +17,9 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	fmt.Println("http://localhost:8080/docs")
+	fmt.Println("http://localhost:8081/?pgsql=db&username=postgres&db=postgres&ns=public&select=settings")
+	defer server.Shutdown()
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
 	}
