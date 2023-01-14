@@ -1,7 +1,6 @@
 # Settings Store
 
-```
-$ yay -S go-swagger
-$ swagger generate server -t gen -f ./spec.yml --exclude-main -A greeter && go run .
-```
+Just run `go generate` & `go run .` and be amaze :)
+
+(But first install [`go-swagger`](https://goswagger.io/install.html))
 
