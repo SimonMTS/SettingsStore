@@ -1,4 +1,4 @@
-openapi: 3.0.0
+swagger: '2.0'
 
 info:
   title: Settings Store
@@ -10,27 +10,30 @@ paths:
       summary: Get all settings
       operationId: getAllSettings
       responses:
-        200:
+        '200':
           description: Settings retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Setting"
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Setting'
+      produces:
+        - application/json
     post:
       summary: Add new setting
-      operationId: addSettings
-      requestBody:
-        description: Setting to add
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Setting'
+      operationId: addSetting
       responses:
-        201:
+        '201':
           description: Settings added successfully
+      parameters:
+        - description: Setting to add
+          required: true
+          name: setting
+          in: body
+          schema:
+            $ref: '#/definitions/Setting'
+      consumes:
+        - application/json
+
   /settings/{id}:
     get:
       summary: Get a setting
@@ -38,51 +41,84 @@ paths:
       parameters:
         - in: path
           name: id
-          schema:
-            type: integer
           required: true
           description: ID of the setting to get
+          type: integer
       responses:
-        200:
+        '200':
           description: Setting retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Setting"
+          schema:
+            $ref: '#/definitions/Setting'
+        '404':
+          description: Setting does not exist
+      produces:
+        - application/json
     put:
       summary: Update existing setting
-      operationId: updateSettings
+      operationId: updateSetting
       parameters:
         - in: path
           name: id
-          schema:
-            type: integer
           required: true
           description: ID of the setting to get
-      requestBody:
-        description: Setting to add
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Setting'
-      responses:
-        201:
-          description: Settings added successfully
-
-components:
-  schemas:
-    Setting:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 64
-        rank:
           type: integer
-          minimum: 0
-          maximum: 50
-      required:
-        - name
-        - rank
+        - description: Setting to update
+          required: true
+          name: setting
+          in: body
+          schema:
+            $ref: '#/definitions/Setting'
+      responses:
+        '204':
+          description: Setting updated successfully
+        '404':
+          description: Setting does not exist
+      consumes:
+        - application/json
+    delete:
+      summary: Remove existing setting
+      operationId: removeSetting
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the setting to remove
+          type: integer
+      responses:
+        '204':
+          description: Setting removed successfully
+        '404':
+          description: Setting does not exist
+      consumes:
+        - application/json
+
+definitions:
+  Setting:
+    type: object
+    properties:
+      id:
+        type: integer
+        minimum: 0
+        maximum: 16
+      type:
+        type: string
+        enum: [global, local, temporary, default]
+      value:
+        type: string
+        minLength: 1
+        maxLength: 32
+      end:
+        $ref: '#/definitions/DateTime'
+    required:
+      - id
+      - type
+      - value
+      - end
+  DateTime:
+    type: string
+    format: date-time
+    x-go-type:
+      type: Time
+      import:
+        package: time
+      embedded: true

@@ -1,3 +1,7 @@
 # Settings Store
 
-Just run `go generate && go run .` and be amaze :)
+```
+$ yay -S go-swagger
+$ swagger generate server -t gen -f ./spec.yml --exclude-main -A greeter && go run .
+```
+
