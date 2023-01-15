@@ -1,22 +1,14 @@
-all: generate context run
-
 generate:
 	rm -rf ./gen
 	mkdir -p ./gen
 	swagger generate server -t ./gen -f ./spec.yml -P models.Principal --exclude-main --strict-responders
 	go mod tidy
 
-run:
-	go run .
-
 context:
-	docker compose up -d
+	docker compose -f deploy/docker-compose.context.yml up
 
-cloc:
-	cloc --exclude-dir=gen .
+compose:
+	docker compose -f deploy/docker-compose.context.yml -f deploy/docker-compose.app.yml up
 
 test:
-	(cd systest && godog run .)
-
-docker-image:
-	docker build -t settingstore -f deploy/dockerfile .
+	go test ./systest

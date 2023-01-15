@@ -1,12 +1,9 @@
 package systest
 
 import (
-	"context"
 	"testing"
 
 	"github.com/cucumber/godog"
-	"github.com/stretchr/testify/assert"
-	tc "github.com/testcontainers/testcontainers-go"
 )
 
 func iSendTheDefaultGlobalSettingRequest() error {
@@ -24,19 +21,7 @@ func thereShouldBeGlobalSettingInTheDatabase(arg1 int) error {
 func TestFeatures(t *testing.T) {
 	suite := godog.TestSuite{
 		ScenarioInitializer: func(ctx *godog.ScenarioContext) {
-			compose, err := tc.NewDockerCompose("testresources/docker-compose.yml")
-			assert.NoError(t, err, "NewDockerComposeAPI()")
-
-			t.Cleanup(func() {
-				assert.NoError(t, compose.Down(context.Background(), tc.RemoveOrphans(true), tc.RemoveImagesLocal), "compose.Down()")
-			})
-
-			ctx, cancel := context.WithCancel(context.Background())
-			t.Cleanup(cancel)
-
-			assert.NoError(t, compose.Up(ctx, tc.Wait(true)), "compose.Up()")
-
-			// do some testing here
+			// https://golang.testcontainers.org/features/docker_compose/
 
 			ctx.Step(`^I send the default global setting request$`, iSendTheDefaultGlobalSettingRequest)
 			ctx.Step(`^there are (\d+) settings in the database$`, thereAreSettingsInTheDatabase)
