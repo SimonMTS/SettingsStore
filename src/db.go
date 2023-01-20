@@ -42,10 +42,14 @@ func DatabaseSetup() (*gorm.DB, error) {
 		time.Sleep(time.Second)
 	}
 
-	err = db.AutoMigrate(&Setting{})
+	err = Migrate(db)
 	if err != nil {
 		return nil, err
 	}
 
 	return db, nil
+}
+
+func Migrate(db *gorm.DB) error {
+	return db.AutoMigrate(&Setting{})
 }

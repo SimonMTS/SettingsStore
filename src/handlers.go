@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (h handler) Auth(s string) (*models.Principal, error) {
+func (h Handler) Auth(s string) (*models.Principal, error) {
 	if s == "test" {
 		prin := models.Principal(s)
 		return &prin, nil
@@ -17,7 +17,7 @@ func (h handler) Auth(s string) (*models.Principal, error) {
 	return nil, errors.New("Ah ah ah! You didn't say the magic word!")
 }
 
-func (h handler) AddSetting(
+func (h Handler) AddSetting(
 	params operations.AddSettingParams,
 	principal *models.Principal,
 ) operations.AddSettingResponder {
@@ -30,7 +30,7 @@ func (h handler) AddSetting(
 	return operations.NewAddSettingCreated()
 }
 
-func (h handler) GetAllSettings(
+func (h Handler) GetAllSettings(
 	params operations.GetAllSettingsParams,
 	principal *models.Principal,
 ) operations.GetAllSettingsResponder {
@@ -45,7 +45,7 @@ func (h handler) GetAllSettings(
 		WithPayload(ToDtos(&settingEntities))
 }
 
-func (h handler) GetSetting(
+func (h Handler) GetSetting(
 	params operations.GetSettingParams,
 	principal *models.Principal,
 ) operations.GetSettingResponder {
@@ -63,7 +63,7 @@ func (h handler) GetSetting(
 		WithPayload(ToDto(&settingEntity))
 }
 
-func (h handler) UpdateSetting(
+func (h Handler) UpdateSetting(
 	params operations.UpdateSettingParams,
 	principal *models.Principal,
 ) operations.UpdateSettingResponder {
@@ -79,7 +79,7 @@ func (h handler) UpdateSetting(
 	return operations.NewUpdateSettingNoContent()
 }
 
-func (h handler) RemoveSetting(
+func (h Handler) RemoveSetting(
 	params operations.RemoveSettingParams,
 	principal *models.Principal,
 ) operations.RemoveSettingResponder {

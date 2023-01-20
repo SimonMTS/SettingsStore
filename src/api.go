@@ -10,11 +10,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type handler struct {
+type Handler struct {
 	database *gorm.DB
 }
 
-func (h handler) db() *gorm.DB {
+func (h Handler) db() *gorm.DB {
 	return h.database.Debug()
 }
 
@@ -29,7 +29,7 @@ func ApiSetup(db *gorm.DB) (*restapi.Server, error) {
 	api := operations.NewSettingsStoreAPI(swaggerSpec)
 	api.UseSwaggerUI()
 
-	handler := handler{database: db}
+	handler := Handler{database: db}
 	api.AddSettingHandler = operations.AddSettingHandlerFunc(handler.AddSetting)
 	api.GetAllSettingsHandler = operations.GetAllSettingsHandlerFunc(handler.GetAllSettings)
 	api.GetSettingHandler = operations.GetSettingHandlerFunc(handler.GetSetting)
