@@ -22,7 +22,8 @@ func (h Handler) AddSetting(
 	principal *models.Principal,
 ) operations.AddSettingResponder {
 
-	err := h.db().Create(ToEntity(params.Setting)).Error
+	asd := ToEntity(params.Setting)
+	err := h.db().Create(asd).Error
 	if err != nil {
 		return operations.NewAddSettingInternalServerError()
 	}

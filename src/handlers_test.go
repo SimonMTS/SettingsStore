@@ -1,7 +1,6 @@
 package src_test
 
 import (
-	"database/sql"
 	"fmt"
 	"settingsstore/gen/models"
 	"settingsstore/gen/restapi/operations"
@@ -9,10 +8,11 @@ import (
 	"testing"
 	"time"
 
-	_ "github.com/proullon/ramsql/driver"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/suite"
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gotest.tools/assert"
 )
 
 type ExampleTestSuite struct {
@@ -26,13 +26,19 @@ func TestExampleTestSuite(t *testing.T) {
 }
 
 func (suite *ExampleTestSuite) SetupTest() {
-	sqlDB, err := sql.Open("ramsql", "Test")
-	fmt.Println(err)
-	db, err := gorm.Open(postgres.New(postgres.Config{Conn: sqlDB}), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 	fmt.Println(err)
 	err = src.Migrate(db)
 	fmt.Println(err)
-	// todo: close?
+
+	suite.handler = src.Handler{
+		Database: db,
+	}
+	suite.db = db
+}
+
+func (suite *ExampleTestSuite) TearDownTest() {
+	// suite.db.Close()
 }
 
 func (suite *ExampleTestSuite) TestExample() {
@@ -40,7 +46,7 @@ func (suite *ExampleTestSuite) TestExample() {
 		ID:    42,
 		Type:  "default",
 		Value: "some value",
-		End:   time.Now(),
+		End:   time.Now().UTC(),
 	}
 	inputSetting := models.Setting{
 		ID:    &expectedSetting.ID,
@@ -50,10 +56,10 @@ func (suite *ExampleTestSuite) TestExample() {
 	}
 
 	// _, _ = expectedSetting, inputSetting
-	_ = suite.handler.AddSetting(operations.AddSettingParams{Setting: &inputSetting}, nil)
+	result := suite.handler.AddSetting(operations.AddSettingParams{Setting: &inputSetting}, nil)
 
-	// assert.Equal(suite.T(), operations.NewAddSettingCreated(), result)
-	// assert.Equal(suite.T(), expectedSetting, suite.SettingInDB())
+	assert.Equal(suite.T(), operations.NewAddSettingCreated(), result)
+	assert.Equal(suite.T(), expectedSetting, suite.SettingInDB())
 }
 
 func (suite *ExampleTestSuite) SettingInDB() (s src.Setting) {
