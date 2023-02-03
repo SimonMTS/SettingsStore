@@ -7,6 +7,7 @@ info:
 paths:
   /settings:
     get:
+      tags: [ Rest ]
       summary: Get all settings
       operationId: getAllSettings
       security:
@@ -19,17 +20,17 @@ paths:
             items:
               $ref: '#/definitions/Setting'
         '500':
-          $ref: '#/responses/InternalServerError' 
-      produces:
-        - application/json
+          $ref: '#/responses/InternalServerError'
+      produces: [ application/json ]
     post:
+      tags: [ Rest ]
       summary: Add new setting
       operationId: addSetting
       responses:
         '201':
           description: Settings added successfully
         '500':
-          $ref: '#/responses/InternalServerError' 
+          $ref: '#/responses/InternalServerError'
       parameters:
         - description: Setting to add
           required: true
@@ -39,11 +40,33 @@ paths:
             $ref: '#/definitions/Setting'
       security:
         - key: []
-      consumes:
-        - application/json
+      consumes: [ application/json ]
+
+  /settings/{id}/stream:
+    get:
+      tags: [ Stream ]
+      summary: Get a stream of setting changes
+      operationId: settingUpdates
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the setting to listen to
+          type: integer
+      security:
+        - key: []
+      responses:
+        '200':
+          description: todo
+          schema:
+            $ref: '#/definitions/Setting'
+        '500':
+          $ref: '#/responses/InternalServerError'
+      produces: [ application/stream+json ]
 
   /settings/{id}:
     get:
+      tags: [ Rest ]
       summary: Get a setting
       operationId: getSetting
       parameters:
@@ -60,12 +83,12 @@ paths:
           schema:
             $ref: '#/definitions/Setting'
         '404':
-          $ref: '#/responses/SettingNotFound' 
+          $ref: '#/responses/SettingNotFound'
         '500':
-          $ref: '#/responses/InternalServerError' 
-      produces:
-        - application/json
+          $ref: '#/responses/InternalServerError'
+      produces: [ application/json ]
     put:
+      tags: [ Rest ]
       summary: Update existing setting
       operationId: updateSetting
       parameters:
@@ -86,12 +109,12 @@ paths:
         '204':
           description: Setting updated successfully
         '404':
-          $ref: '#/responses/SettingNotFound' 
+          $ref: '#/responses/SettingNotFound'
         '500':
-          $ref: '#/responses/InternalServerError' 
-      consumes:
-        - application/json
+          $ref: '#/responses/InternalServerError'
+      consumes: [ application/json ]
     delete:
+      tags: [ Rest ]
       summary: Remove existing setting
       operationId: removeSetting
       parameters:
@@ -106,11 +129,10 @@ paths:
         '204':
           description: Setting removed successfully
         '404':
-          $ref: '#/responses/SettingNotFound' 
+          $ref: '#/responses/SettingNotFound'
         '500':
-          $ref: '#/responses/InternalServerError' 
-      consumes:
-        - application/json
+          $ref: '#/responses/InternalServerError'
+      consumes: [ application/json ]
 
 responses:
   SettingNotFound:

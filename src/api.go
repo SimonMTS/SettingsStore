@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"settingsstore/gen/restapi"
 	"settingsstore/gen/restapi/operations"
+	"settingsstore/gen/restapi/operations/rest"
+	"settingsstore/gen/restapi/operations/stream"
 
 	"github.com/MadAppGang/httplog"
 	"github.com/go-openapi/loads"
@@ -30,11 +32,12 @@ func ApiSetup(db *gorm.DB) (*restapi.Server, error) {
 	api.UseSwaggerUI()
 
 	handler := Handler{Database: db}
-	api.AddSettingHandler = operations.AddSettingHandlerFunc(handler.AddSetting)
-	api.GetAllSettingsHandler = operations.GetAllSettingsHandlerFunc(handler.GetAllSettings)
-	api.GetSettingHandler = operations.GetSettingHandlerFunc(handler.GetSetting)
-	api.UpdateSettingHandler = operations.UpdateSettingHandlerFunc(handler.UpdateSetting)
-	api.RemoveSettingHandler = operations.RemoveSettingHandlerFunc(handler.RemoveSetting)
+	api.RestAddSettingHandler = rest.AddSettingHandlerFunc(handler.AddSetting)
+	api.RestGetAllSettingsHandler = rest.GetAllSettingsHandlerFunc(handler.GetAllSettings)
+	api.RestGetSettingHandler = rest.GetSettingHandlerFunc(handler.GetSetting)
+	api.StreamSettingUpdatesHandler = stream.SettingUpdatesHandlerFunc(handler.StreamSettings)
+	api.RestUpdateSettingHandler = rest.UpdateSettingHandlerFunc(handler.UpdateSetting)
+	api.RestRemoveSettingHandler = rest.RemoveSettingHandlerFunc(handler.RemoveSetting)
 	api.KeyAuth = handler.Auth
 
 	server := restapi.NewServer(api)

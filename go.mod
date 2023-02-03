@@ -13,10 +13,13 @@ require (
 	github.com/go-openapi/swag v0.22.3
 	github.com/go-openapi/validate v0.22.0
 	github.com/jessevdk/go-flags v1.5.0
+	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/stretchr/testify v1.8.1
 	golang.org/x/net v0.5.0
 	gorm.io/driver/postgres v1.4.6
+	gorm.io/driver/sqlite v1.4.4
 	gorm.io/gorm v1.24.3
+	gotest.tools v2.2.0+incompatible
 )
 
 require (
@@ -45,12 +48,10 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
-	github.com/mattn/go-sqlite3 v1.14.16 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/proullon/ramsql v0.0.0-20220719091513-bf3c20043516 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	go.mongodb.org/mongo-driver v1.10.1 // indirect
@@ -58,6 +59,4 @@ require (
 	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/text v0.6.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/sqlite v1.4.4 // indirect
-	gotest.tools v2.2.0+incompatible // indirect
 )
