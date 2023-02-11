@@ -1,7 +1,13 @@
 generate:
 	rm -rf ./gen
 	mkdir -p ./gen
-	swagger generate server -t ./gen -f ./spec.yml -P models.Principal --exclude-main --strict-responders
+	swagger generate server \
+		-t ./gen \
+		-f ./spec.yml \
+		-P dto.Principal \
+		-m dto \
+		--exclude-main \
+		--strict-responders
 	go mod tidy
 
 context:

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"settingsstore/gen/models"
+	"settingsstore/gen/dto"
 	"settingsstore/gen/restapi/operations/rest"
 	"settingsstore/gen/restapi/operations/stream"
 	"time"
@@ -15,9 +15,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func (h Handler) Auth(s string) (*models.Principal, error) {
+func (h Handler) Auth(s string) (*dto.Principal, error) {
 	if s == "test" {
-		prin := models.Principal(s)
+		prin := dto.Principal(s)
 		return &prin, nil
 	}
 
@@ -26,7 +26,7 @@ func (h Handler) Auth(s string) (*models.Principal, error) {
 
 func (h Handler) AddSetting(
 	params rest.AddSettingParams,
-	principal *models.Principal,
+	principal *dto.Principal,
 ) rest.AddSettingResponder {
 
 	asd := ToEntity(params.Setting)
@@ -40,7 +40,7 @@ func (h Handler) AddSetting(
 
 func (h Handler) GetAllSettings(
 	params rest.GetAllSettingsParams,
-	principal *models.Principal,
+	principal *dto.Principal,
 ) rest.GetAllSettingsResponder {
 
 	settingEntities := []Setting{}
@@ -55,7 +55,7 @@ func (h Handler) GetAllSettings(
 
 func (h Handler) GetSetting(
 	params rest.GetSettingParams,
-	principal *models.Principal,
+	principal *dto.Principal,
 ) rest.GetSettingResponder {
 
 	settingEntity := Setting{ID: uuid.MustParse(params.ID.String())}
@@ -73,7 +73,7 @@ func (h Handler) GetSetting(
 
 func (h Handler) StreamSettings(
 	params stream.SettingUpdatesParams,
-	principal *models.Principal,
+	principal *dto.Principal,
 ) stream.SettingUpdatesResponder {
 
 	return genericStreamer{h, params.ID}
@@ -95,7 +95,7 @@ func (gs genericStreamer) WriteResponse(rw http.ResponseWriter, p runtime.Produc
 
 	for i := 0; i < 5; i++ {
 
-		p := models.Principal("")
+		p := dto.Principal("")
 		resp := gs.h.GetSetting(rest.GetSettingParams{ID: gs.id}, &p).(*rest.GetSettingOK)
 
 		e.Encode(resp.Payload)
@@ -106,7 +106,7 @@ func (gs genericStreamer) WriteResponse(rw http.ResponseWriter, p runtime.Produc
 
 func (h Handler) UpdateSetting(
 	params rest.UpdateSettingParams,
-	principal *models.Principal,
+	principal *dto.Principal,
 ) rest.UpdateSettingResponder {
 
 	err := h.db().Save(ToEntity(params.Setting)).Error
@@ -122,7 +122,7 @@ func (h Handler) UpdateSetting(
 
 func (h Handler) RemoveSetting(
 	params rest.RemoveSettingParams,
-	principal *models.Principal,
+	principal *dto.Principal,
 ) rest.RemoveSettingResponder {
 
 	err := h.db().Delete(&Setting{}, params.ID).Error

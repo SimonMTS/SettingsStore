@@ -2,7 +2,7 @@ package src_test
 
 import (
 	"fmt"
-	"settingsstore/gen/models"
+	"settingsstore/gen/dto"
 	"settingsstore/gen/restapi/operations/rest"
 	"settingsstore/src"
 	"testing"
@@ -49,11 +49,11 @@ func (suite *ExampleTestSuite) TestExample() {
 		Value: "some value",
 		End:   time.Now().UTC(),
 	}
-	inputSetting := models.Setting{
-		ID:    &models.UUID{UUID: expectedSetting.ID},
+	inputSetting := dto.Setting{
+		ID:    &dto.UUID{UUID: expectedSetting.ID},
 		Type:  &expectedSetting.Type,
 		Value: &expectedSetting.Value,
-		End:   &models.DateTime{Time: expectedSetting.End},
+		End:   &dto.DateTime{Time: expectedSetting.End},
 	}
 
 	result := suite.handler.AddSetting(rest.AddSettingParams{Setting: &inputSetting}, nil)
