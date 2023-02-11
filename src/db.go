@@ -5,12 +5,13 @@ import (
 	"os"
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type Setting struct {
-	ID    int64
+	ID    uuid.UUID
 	Type  string
 	Value string
 	End   time.Time

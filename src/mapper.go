@@ -2,11 +2,13 @@ package src
 
 import (
 	"settingsstore/gen/models"
+
+	"github.com/google/uuid"
 )
 
 func ToEntity(source *models.Setting) (target *Setting) {
 	target = &Setting{}
-	target.ID = *source.ID
+	target.ID = UuidToEntity(source.ID)
 	target.Type = *source.Type
 	target.Value = *source.Value
 	target.End = source.End.UTC()
@@ -15,7 +17,7 @@ func ToEntity(source *models.Setting) (target *Setting) {
 
 func ToDto(source *Setting) (target *models.Setting) {
 	target = &models.Setting{}
-	target.ID = &source.ID
+	target.ID = UuidToDto(source.ID)
 	target.Type = &source.Type
 	target.Value = &source.Value
 	target.End = &models.DateTime{Time: source.End}
@@ -27,4 +29,14 @@ func ToDtos(sources *[]Setting) (targets []*models.Setting) {
 		targets = append(targets, ToDto(&s))
 	}
 	return
+}
+
+func UuidToEntity(source *models.UUID) uuid.UUID {
+	return uuid.MustParse(source.String())
+}
+
+func UuidToDto(source uuid.UUID) *models.UUID {
+	return &models.UUID{
+		UUID: source,
+	}
 }

@@ -52,7 +52,8 @@ paths:
           name: id
           required: true
           description: ID of the setting to listen to
-          type: integer
+          type: string
+          format: uuid
       security:
         - key: []
       responses:
@@ -74,7 +75,8 @@ paths:
           name: id
           required: true
           description: ID of the setting to get
-          type: integer
+          type: string
+          format: uuid
       security:
         - key: []
       responses:
@@ -96,7 +98,8 @@ paths:
           name: id
           required: true
           description: ID of the setting to get
-          type: integer
+          type: string
+          format: uuid
         - description: Setting to update
           required: true
           name: setting
@@ -151,9 +154,7 @@ definitions:
     type: object
     properties:
       id:
-        type: integer
-        minimum: 0
-        maximum: 16
+        $ref: '#/definitions/UUID'
       type:
         type: string
         enum: [global, local, temporary, default]
@@ -175,6 +176,14 @@ definitions:
       type: Time
       import:
         package: time
+      embedded: true
+  UUID:
+    type: string
+    format: uuid
+    x-go-type:
+      type: UUID
+      import:
+        package: github.com/google/uuid
       embedded: true
 
   principal:

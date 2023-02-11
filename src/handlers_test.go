@@ -3,11 +3,12 @@ package src_test
 import (
 	"fmt"
 	"settingsstore/gen/models"
-	"settingsstore/gen/restapi/operations"
+	"settingsstore/gen/restapi/operations/rest"
 	"settingsstore/src"
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/driver/sqlite"
@@ -43,22 +44,21 @@ func (suite *ExampleTestSuite) TearDownTest() {
 
 func (suite *ExampleTestSuite) TestExample() {
 	expectedSetting := src.Setting{
-		ID:    42,
+		ID:    uuid.New(),
 		Type:  "default",
 		Value: "some value",
 		End:   time.Now().UTC(),
 	}
 	inputSetting := models.Setting{
-		ID:    &expectedSetting.ID,
+		ID:    &models.UUID{UUID: expectedSetting.ID},
 		Type:  &expectedSetting.Type,
 		Value: &expectedSetting.Value,
 		End:   &models.DateTime{Time: expectedSetting.End},
 	}
 
-	// _, _ = expectedSetting, inputSetting
-	result := suite.handler.AddSetting(operations.AddSettingParams{Setting: &inputSetting}, nil)
+	result := suite.handler.AddSetting(rest.AddSettingParams{Setting: &inputSetting}, nil)
 
-	assert.Equal(suite.T(), operations.NewAddSettingCreated(), result)
+	assert.Equal(suite.T(), rest.NewAddSettingCreated(), result)
 	assert.Equal(suite.T(), expectedSetting, suite.SettingInDB())
 }
 

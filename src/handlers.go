@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/go-openapi/runtime"
+	"github.com/go-openapi/strfmt"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -56,7 +58,7 @@ func (h Handler) GetSetting(
 	principal *models.Principal,
 ) rest.GetSettingResponder {
 
-	settingEntity := Setting{ID: params.ID}
+	settingEntity := Setting{ID: uuid.MustParse(params.ID.String())}
 	err := h.db().First(&settingEntity).Error
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -74,10 +76,13 @@ func (h Handler) StreamSettings(
 	principal *models.Principal,
 ) stream.SettingUpdatesResponder {
 
-	return genericStreamer{h}
+	return genericStreamer{h, params.ID}
 }
 
-type genericStreamer struct{ h Handler }
+type genericStreamer struct {
+	h  Handler
+	id strfmt.UUID
+}
 
 func (gs genericStreamer) SettingUpdatesResponder() {}
 func (gs genericStreamer) WriteResponse(rw http.ResponseWriter, p runtime.Producer) {
@@ -91,7 +96,7 @@ func (gs genericStreamer) WriteResponse(rw http.ResponseWriter, p runtime.Produc
 	for i := 0; i < 5; i++ {
 
 		p := models.Principal("")
-		resp := gs.h.GetSetting(rest.GetSettingParams{ID: 1}, &p).(*rest.GetSettingOK)
+		resp := gs.h.GetSetting(rest.GetSettingParams{ID: gs.id}, &p).(*rest.GetSettingOK)
 
 		e.Encode(resp.Payload)
 		f.Flush()
