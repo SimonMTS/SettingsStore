@@ -14,3 +14,12 @@ services:
       - ADMINER_DESIGN=flat
     ports:
       - 8081:8080
+
+  jaeger:
+    image: jaegertracing/all-in-one
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - 16686:16686 # ui
+      - 14268:14268 # receive traces

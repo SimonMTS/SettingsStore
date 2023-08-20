@@ -1,9 +1,11 @@
 package src
 
 import (
+	"context"
 	"settingsstore/gen/dto"
 
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel"
 )
 
 func ToEntity(source *dto.Setting) (target *Setting) {
@@ -24,7 +26,10 @@ func ToDto(source *Setting) (target *dto.Setting) {
 	return
 }
 
-func ToDtos(sources *[]Setting) (targets []*dto.Setting) {
+func ToDtos(ctx context.Context, sources *[]Setting) (targets []*dto.Setting) {
+	_, span := otel.Tracer("some-name").Start(ctx, "ToDtos")
+	defer span.End()
+
 	for _, s := range *sources {
 		targets = append(targets, ToDto(&s))
 	}

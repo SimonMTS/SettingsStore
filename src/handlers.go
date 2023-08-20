@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel"
 	"gorm.io/gorm"
 )
 
@@ -28,7 +29,6 @@ func (h Handler) AddSetting(
 	params rest.AddSettingParams,
 	principal *dto.Principal,
 ) rest.AddSettingResponder {
-
 	asd := ToEntity(params.Setting)
 	err := h.db().Create(asd).Error
 	if err != nil {
@@ -42,22 +42,27 @@ func (h Handler) GetAllSettings(
 	params rest.GetAllSettingsParams,
 	principal *dto.Principal,
 ) rest.GetAllSettingsResponder {
+	ctx := params.HTTPRequest.Context()
+
+	ctx, span := otel.Tracer("some-name").Start(ctx, "GetAllSettings")
+	defer span.End()
 
 	settingEntities := []Setting{}
+	_, span2 := otel.Tracer("some-name").Start(ctx, "db.Find")
 	err := h.db().Find(&settingEntities).Error
+	span2.End()
 	if err != nil {
 		return rest.NewGetAllSettingsInternalServerError()
 	}
 
 	return rest.NewGetAllSettingsOK().
-		WithPayload(ToDtos(&settingEntities))
+		WithPayload(ToDtos(ctx, &settingEntities))
 }
 
 func (h Handler) GetSetting(
 	params rest.GetSettingParams,
 	principal *dto.Principal,
 ) rest.GetSettingResponder {
-
 	settingEntity := Setting{ID: uuid.MustParse(params.ID.String())}
 	err := h.db().First(&settingEntity).Error
 
@@ -75,7 +80,6 @@ func (h Handler) StreamSettings(
 	params stream.SettingUpdatesParams,
 	principal *dto.Principal,
 ) stream.SettingUpdatesResponder {
-
 	return genericStreamer{h, params.ID}
 }
 
@@ -108,7 +112,6 @@ func (h Handler) UpdateSetting(
 	params rest.UpdateSettingParams,
 	principal *dto.Principal,
 ) rest.UpdateSettingResponder {
-
 	err := h.db().Save(ToEntity(params.Setting)).Error
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -124,7 +127,6 @@ func (h Handler) RemoveSetting(
 	params rest.RemoveSettingParams,
 	principal *dto.Principal,
 ) rest.RemoveSettingResponder {
-
 	err := h.db().Delete(&Setting{}, params.ID).Error
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
